@@ -73,7 +73,7 @@ const client = new MongoClient(uri, {
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
-    app.get('/users', async (req, res) => {
+    app.get('/users',async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
@@ -93,6 +93,10 @@ const client = new MongoClient(uri, {
       const result = await productsCollection.find().toArray();
       res.send(result);
     });
+    app.get('/subscriptions',  async (req, res) => {
+      const result = await subcriptionCollection.find().toArray();
+      res.send(result);
+    });
     // womens fashion
  app.get('/womensfashion/:text', async (req, res) => {
       console.log(req.params.text);
@@ -105,9 +109,9 @@ const client = new MongoClient(uri, {
       res.send(result)
     })
 // admin
-    app.get('/users/admin/:email', verifyJWT, async (req, res) => {
+    app.get('/users/admin/:email',verifyJWT, async (req, res) => {
       const email = req.params.email;
-      if (req.decoded.email !== email) {
+      if (req?.decoded?.email !== email) {
         res.send({ admin: false })
       }
       const query = { email: email }
@@ -129,7 +133,7 @@ const client = new MongoClient(uri, {
       res.send(result);
     })
 
-    app.get('/users/seller/:email', verifyJWT, async (req, res) => {
+    app.get('/users/seller/:email',verifyJWT, async (req, res) => {
       const email = req.params.email;
       if (req.decoded.email !== email) {
         res.send({ seller: false })
@@ -151,7 +155,42 @@ const client = new MongoClient(uri, {
       const result = await usersCollection.updateOne(filter, updateDoc);
       res.send(result);
     })
+    // subscription
+    app.patch('/subscriptions/client/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'client'
+        },
+      };
+      const result = await subcriptionCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
+    app.patch('/subscriptions/denied/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'denied'
+        },
+      };
+      const result = await subcriptionCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
 
+    app.get('/subscriptions/client/:email',verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      if (req.decoded.email !== email) {
+        res.send({ client: false })
+      }
+      const query = { email: email }
+      const user = await subcriptionCollection.findOne(query);
+      const result = { client: user?.role === 'client' }
+      res.send(result);
+    })
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 } finally {
   // Ensures that the client will close when you finish/error
