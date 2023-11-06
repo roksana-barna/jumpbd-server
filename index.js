@@ -1,5 +1,7 @@
 const express = require('express');
+const multer = require('multer');
 const app = express();
+const upload = multer({ dest: 'uploads/' });
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
@@ -79,20 +81,62 @@ const client = new MongoClient(uri, {
     });
   //  all project
     // app.post('/addproduct', verifyJWT, async (req, res) => {
-    app.post('/addproducts', async (req, res) => {
-      const newItem = req.body;
-      const result = await productsCollection.insertOne(newItem)
-      res.send(result);
-    })
+    // app.post('/addproducts', async (req, res) => {
+    //   const newItem = req.body;
+    //   const result = await productsCollection.insertOne(newItem)
+    //   res.send(result);
+    // })
+
+    app.post('/addproducts', upload.array('productImages', 5), async (req, res) => {
+      // Access the uploaded files from req.files
+      const productImages = req.files.map((file) => file.path);
+    
+      // Access other form fields from req.body
+      const newItem = {
+        name: req.body.name,
+        sellerName: req.body.sellerName,
+        email: req.body.email,
+        category: req.body.category,
+        price: req.body.price,
+        rating: req.body.rating,
+        quantity: req.body.quantity,
+        keyfeatures: req.body.keyfeatures,
+        description: req.body.description,
+        productImages: productImages, // Add the file paths to the newItem object
+      };
+    
+      try {
+        // Handle the insertion of the newItem into your database
+        const result = await productsCollection.insertOne(newItem);
+    
+        // Send a response to the client
+        res.json({ message: 'Product successfully added', insertedId: result.insertedId });
+      } catch (error) {
+        console.error('Error adding product:', error);
+        res.status(500).json({ error: 'Failed to add the product' });
+      }
+    });
+
     app.post('/subscriptions', async (req, res) => {
       const newItem = req.body;
       const result = await subcriptionCollection.insertOne(newItem)
       res.send(result);
     })
-    app.get('/addproducts',  async (req, res) => {
-      const result = await productsCollection.find().toArray();
-      res.send(result);
+    // app.get('/addproducts',  async (req, res) => {
+    //   const result = await productsCollection.find().toArray();
+    //   res.send(result);
+    // });
+
+    app.get('/addproducts', async (req, res) => {
+      try {
+        const products = await productsCollection.find().toArray();
+        res.json(products);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ error: 'Failed to fetch products' });
+      }
     });
+    
     app.get('/subscriptions',  async (req, res) => {
       const result = await subcriptionCollection.find().toArray();
       res.send(result);
@@ -180,6 +224,13 @@ const client = new MongoClient(uri, {
       const result = await subcriptionCollection.updateOne(filter, updateDoc);
       res.send(result);
     })
+    // add to cart
+    app.get('/addtocart/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await productsCollection.findOne(query);
+      res.send(result)
+    })
 
     app.get('/subscriptions/client/:email',verifyJWT, async (req, res) => {
       const email = req.params.email;
@@ -205,3 +256,4 @@ app.get('/', (req, res) => {
   app.listen(port, () => {
     console.log(`programmer girl sitting on port ${port}`);
   })
+  
