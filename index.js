@@ -17,7 +17,7 @@ const port = process.env.PORT || 5000;
 const corsConfig ={
   origin:'*',
   credentials:true,
-  methods:['GET','POST','PUT','DELETE']
+  methods:['GET','POST','PUT','PATCH','DELETE']
 }
 app.use(cors(corsConfig))
 app.options('',cors(corsConfig))
@@ -134,7 +134,7 @@ async function run() {
         email: req.body.email,
         category: req.body.category,
         price: req.body.price,
-        rating: req.body.rating,
+        suggestprice: req.body.suggestprice,
         quantity: req.body.quantity,
         keyfeatures: req.body.keyfeatures,
         description: req.body.description,
@@ -446,11 +446,11 @@ app.put('/update/:id', async (req, res) => {
   
   //   res.json({ success: true });
   // });
-  app.post('/orders', async (req, res) => {
-    const newItem = req.body;
-    const result = await orderCollection.insertOne(newItem)
-    res.send(result);
-  })
+  // app.post('/orders', async (req, res) => {
+  //   const newItem = req.body;
+  //   const result = await orderCollection.insertOne(newItem)
+  //   res.send(result);
+  // })
 
   // app.get('/orders', async (req, res) => {
   //   const email = req.query.email;
@@ -462,7 +462,127 @@ app.put('/update/:id', async (req, res) => {
   //   const result = await orderCollection.find(query).toArray();
   //   res.send(result);
   // });
+  // order
+  app.post('/orders', async (req, res) => {
+    try {
+      const newItem = req.body;
+      const result = await orderCollection.insertOne(newItem);
+      res.json({
+        success: true,
+        // order: result.ops[0],
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to create the order',
+      });
+    }
+  });
+  app.get('/orders', async (req, res) => {
+    try {
+      const orders = await orderCollection.find().toArray();
+      res.json({
+        success: true,
+        orders: orders,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch orders',
+      });
+    }
+  });
+    
+  // fullfilled
+  app.put('/order/updateFulfillmentStatus/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    try {
+        const result = await orderCollection.updateOne(
+            { _id: ObjectId(orderId) },
+            { $set: { fulfilled: status === 'fulfilled' } }
+        );
+
+        if (result.matchedCount === 1) {
+            res.status(200).json({ success: true, message: 'Fulfillment status updated successfully' });
+        } else {
+            res.status(404).json({ success: false, message: 'Order not found' });
+        }
+    } catch (error) {
+        console.error('Error updating fulfillment status:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
   
+
+  // allproducts for admin dashboard
+  app.delete('/addproducts/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) }
+    const result = await productsCollection.deleteOne(query);
+    res.send(result);
+  })
+  app.get('/orderedproductdetails/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) }
+    const result = await orderCollection.findOne(query);
+    res.send(result)
+  })
+
+// Assuming you have a MongoDB collection for products
+app.get('/updateproduct/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) }
+  const result = await productsCollection.findOne(query);
+  res.send(result)
+});
+
+app.put('/updateproduct/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) }
+  const options = { upsert: true }
+  const updatedProduct = req.body;
+  const productUpdate = {
+    $set: {
+      category: updatedProduct.category,
+      description: updatedProduct.description,
+      email: updatedProduct.email,
+      keyfeatures: updatedProduct.keyfeatures,
+      name: updatedProduct.name,
+      price: updatedProduct.price,
+      suggestprice: updatedProduct.suggestprice,
+
+      productImages: updatedProduct.productImages,
+      quantity: updatedProduct.quantity,
+    }
+  }
+  const result = await productsCollection.updateOne(filter, productUpdate, options);
+  res.send(result)
+});
+
+
+  // searching
+  const indexKeys = { name: 1 };
+  const indexOptions = { name: 'toyName' };
+  const result = await productsCollection.createIndex(indexKeys, indexOptions);
+  console.log(result);
+
+  app.get("/productNameSearch/:text", async (req, res) => {
+    const text = req.params.text;
+    // console.log(text)
+    const result = await productsCollection
+      .find({
+        $or: [
+          { name: { $regex: text, $options: "i" } },
+        ],
+      })
+      .toArray();
+    res.send(result);
+  });
   
   console.log("Pinged your deployment. You successfully connected to MongoDB!");
 } 
