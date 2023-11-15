@@ -14,13 +14,13 @@ const port = process.env.PORT || 5000;
 //   optionSuccessStatus: 200,
 // }
 // app.use(cors(corsOptions));
-const corsConfig ={
-  origin:'*',
-  credentials:true,
-  methods:['GET','POST','PUT','PATCH','DELETE']
+const corsConfig = {
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 }
 app.use(cors(corsConfig))
-app.options('',cors(corsConfig))
+app.options('', cors(corsConfig))
 
 app.use(express.json());
 
@@ -158,7 +158,7 @@ async function run() {
     //   const productId = req.body.productId; // Include a productId in the request body to identify the product
     //   const quantity = req.body.quantity; // Include quantity to update the product's quantity
     //   const uploadedFileName = req.uploadedFileName;
-    
+
     //   // Access other form fields from req.body
     //   const newItem = {
     //     name: req.body.name,
@@ -172,7 +172,7 @@ async function run() {
     //     description: req.body.description,
     //     productImages: uploadedFileName, // Add the file paths to the newItem object
     //   };
-    
+
     //   try {
     //     if (productId) {
     //       // If a productId is provided, update the existing product
@@ -180,13 +180,13 @@ async function run() {
     //       const updateDoc = {
     //         $set: newItem,
     //       };
-    
+
     //       const result = await productsCollection.updateOne(filter, updateDoc);
-    
+
     //       if (result.matchedCount === 0) {
     //         return res.status(404).json({ error: 'Product not found' });
     //       }
-    
+
     //       return res.json({ message: 'Product updated successfully' });
     //     } else {
     //       // If no productId is provided, create a new product
@@ -293,7 +293,7 @@ async function run() {
       const result = await subcriptionCollection.updateOne(filter, updateDoc);
       res.send(result);
     })
-    app.get('/subscriptions/client/:email',verifyJWT, async (req, res) => {
+    app.get('/subscriptions/client/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       if (req.decoded.email !== email) {
         res.send({ client: false })
@@ -308,12 +308,12 @@ async function run() {
 
     // profile
     app.get('/subscriptions/:email', async (req, res) => {
-      const email=req.params.email;
-      const query={ email :{ $eq:email}};
+      const email = req.params.email;
+      const query = { email: { $eq: email } };
       console.log(email)
-       const result = await subcriptionCollection.find(query).toArray()
-       res.send(result);
-     });
+      const result = await subcriptionCollection.find(query).toArray()
+      res.send(result);
+    });
     app.patch('/subscriptions/denied/:id', async (req, res) => {
       const id = req.params.id;
       console.log(id);
@@ -336,68 +336,68 @@ async function run() {
 
 
     // app.get('/cartitem/:orderId', (req, res) => {
-//     app.get('/cartitem/:orderId', (req, res) => {
-//   const orderId = parseInt(req.params.orderId);
-//   const order = cartCollection.find((o) => o.id === orderId);
+    //     app.get('/cartitem/:orderId', (req, res) => {
+    //   const orderId = parseInt(req.params.orderId);
+    //   const order = cartCollection.find((o) => o.id === orderId);
 
-//   if (!order) {
-//     return res.status(404).json({ error: 'Order not found' });
-//   }
+    //   if (!order) {
+    //     return res.status(404).json({ error: 'Order not found' });
+    //   }
 
-//   res.json(order);
-// });
-// update
-app.get('/update/:id', async (req, res) => {
-  const id = req.params.id;
-  const query = { _id: new ObjectId(id) }
-  const result = await subcriptionCollection.findOne(query);
-  res.send(result)
-})
-app.put('/update/:id', async (req, res) => {
-  const id = req.params.id;
-  const filter = { _id: new ObjectId(id) }
-  const options = { upsert: true }
-  const updatedtoy = req.body;
-  const toy = {
-    $set: {
-      businessName: updatedtoy.businessName,
-      nidNumber: updatedtoy.nidNumber,
-      dateOfBirth: updatedtoy.dateOfBirth,
-      address: updatedtoy.address,
-      website: updatedtoy.website,
-      businessPage: updatedtoy.businessPage,
-      number: updatedtoy.number,
-      email: updatedtoy.email,
-      subscription_fee: updatedtoy.subscription_fee,
-      nidFrontPart: updatedtoy.nidFrontPart,
-      nidBackPart: updatedtoy.nidBackPart,
-      photoURL:updatedtoy.photoURL,
-    }
-  }
-  const result = await subcriptionCollection.updateOne(filter, toy, options);
-  res.send(result)
-})
-  app.post('/cartitem', async (req, res) => {
-    const newItem = req.body;
-    const result = await cartCollection.insertOne(newItem)
-    res.send(result);
-  })
-  app.get('/cartitem', async (req, res) => {
-    const result = await cartCollection.find().toArray();
-    res.send(result);
-  });
- app.get('/cartitem/:email/:sortByPrice', async (req, res) => {
+    //   res.json(order);
+    // });
+    // update
+    app.get('/update/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await subcriptionCollection.findOne(query);
+      res.send(result)
+    })
+    app.put('/update/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true }
+      const updatedtoy = req.body;
+      const toy = {
+        $set: {
+          businessName: updatedtoy.businessName,
+          nidNumber: updatedtoy.nidNumber,
+          dateOfBirth: updatedtoy.dateOfBirth,
+          address: updatedtoy.address,
+          website: updatedtoy.website,
+          businessPage: updatedtoy.businessPage,
+          number: updatedtoy.number,
+          email: updatedtoy.email,
+          subscription_fee: updatedtoy.subscription_fee,
+          nidFrontPart: updatedtoy.nidFrontPart,
+          nidBackPart: updatedtoy.nidBackPart,
+          photoURL: updatedtoy.photoURL,
+        }
+      }
+      const result = await subcriptionCollection.updateOne(filter, toy, options);
+      res.send(result)
+    })
+    app.post('/cartitem', async (req, res) => {
+      const newItem = req.body;
+      const result = await cartCollection.insertOne(newItem)
+      res.send(result);
+    })
+    app.get('/cartitem', async (req, res) => {
+      const result = await cartCollection.find().toArray();
+      res.send(result);
+    });
+    app.get('/cartitem/:email/:sortByPrice', async (req, res) => {
       const email = req.params.email;
       const sortByPrice = req.params.sortByPrice;
-      const query = {email : email};
-       const sort = { price:sortByPrice};
-       console.log(email)
-       console.log(sortByPrice)
-         const cursor =  cartCollection.find(query).sort(sort).collation({locale: "en_US", numericOrdering: true}).limit(20);
+      const query = { email: email };
+      const sort = { price: sortByPrice };
+      console.log(email)
+      console.log(sortByPrice)
+      const cursor = cartCollection.find(query).sort(sort).collation({ locale: "en_US", numericOrdering: true }).limit(20);
       const result = await cursor.toArray();
       return res.send(result);
-  })
- app.delete('/cartitem/:id', async (req, res) => {
+    })
+    app.delete('/cartitem/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await cartCollection.deleteOne(query);
@@ -414,182 +414,194 @@ app.put('/update/:id', async (req, res) => {
       const result = await cartCollection.find(query).toArray();
       res.send(result);
     });
-  // app.get('/subscriptions/client/:email', async (req, res) => {
-  //   const email = req.params.email;
-  //   if (req.decoded.email !== email) {
-  //     res.send({ client: false })
-  //   }
-  //   const query = { email: email }
-  //   const user = await subcriptionCollection.findOne(query);
-  //   const result = { client: user?.role === 'client' }
-  //   res.send(result);
-  // })
+    // app.get('/subscriptions/client/:email', async (req, res) => {
+    //   const email = req.params.email;
+    //   if (req.decoded.email !== email) {
+    //     res.send({ client: false })
+    //   }
+    //   const query = { email: email }
+    //   const user = await subcriptionCollection.findOne(query);
+    //   const result = { client: user?.role === 'client' }
+    //   res.send(result);
+    // })
 
-  // order
-  // app.post('/orders', (req, res) => {
-  //   const orderData = req.body;
-  //   const order = {
-  //     user: orderData.user,
-  //     products: orderData.products,
-  //     totalPrice: orderData.totalPrice,
-  //     date: new Date().toISOString(),
-  //   };
-  //   orders.push(order);
-  
-  //   // Update product quantities based on the order
-  //   for (const productId in order.products) {
-  //     const product = products.find((p) => p.id === Number(productId));
-  //     if (product) {
-  //       product.quantity -= order.products[productId];
-  //     }
-  //   }
-  
-  //   res.json({ success: true });
-  // });
-  // app.post('/orders', async (req, res) => {
-  //   const newItem = req.body;
-  //   const result = await orderCollection.insertOne(newItem)
-  //   res.send(result);
-  // })
+    // order
+    // app.post('/orders', (req, res) => {
+    //   const orderData = req.body;
+    //   const order = {
+    //     user: orderData.user,
+    //     products: orderData.products,
+    //     totalPrice: orderData.totalPrice,
+    //     date: new Date().toISOString(),
+    //   };
+    //   orders.push(order);
 
-  // app.get('/orders', async (req, res) => {
-  //   const email = req.query.email;
+    //   // Update product quantities based on the order
+    //   for (const productId in order.products) {
+    //     const product = products.find((p) => p.id === Number(productId));
+    //     if (product) {
+    //       product.quantity -= order.products[productId];
+    //     }
+    //   }
 
-  //   if (!email) {
-  //     res.send([]);
-  //   }
-  //   const query = { email: email };
-  //   const result = await orderCollection.find(query).toArray();
-  //   res.send(result);
-  // });
-  // order
-  app.post('/orders', async (req, res) => {
-    try {
-      const newItem = req.body;
-      const result = await orderCollection.insertOne(newItem);
-      res.json({
-        success: true,
-        // order: result.ops[0],
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to create the order',
-      });
-    }
-  });
-  app.get('/orders', async (req, res) => {
-    try {
-      const orders = await orderCollection.find().toArray();
-      res.json({
-        success: true,
-        orders: orders,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch orders',
-      });
-    }
-  });
-    
-  // fullfilled
-  app.put('/order/updateFulfillmentStatus/:orderId', async (req, res) => {
-    const { orderId } = req.params;
-    const { status } = req.body;
+    //   res.json({ success: true });
+    // });
+    // app.post('/orders', async (req, res) => {
+    //   const newItem = req.body;
+    //   const result = await orderCollection.insertOne(newItem)
+    //   res.send(result);
+    // })
 
-    try {
-        const result = await orderCollection.updateOne(
-            { _id: ObjectId(orderId) },
-            { $set: { fulfilled: status === 'fulfilled' } }
-        );
+    // app.get('/orders', async (req, res) => {
+    //   const email = req.query.email;
 
-        if (result.matchedCount === 1) {
-            res.status(200).json({ success: true, message: 'Fulfillment status updated successfully' });
-        } else {
-            res.status(404).json({ success: false, message: 'Order not found' });
+    //   if (!email) {
+    //     res.send([]);
+    //   }
+    //   const query = { email: email };
+    //   const result = await orderCollection.find(query).toArray();
+    //   res.send(result);
+    // });
+    // order
+    app.post('/orders', async (req, res) => {
+      try {
+        const newItem = req.body;
+        const result = await orderCollection.insertOne(newItem);
+        res.json({
+          success: true,
+          // order: result.ops[0],
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({
+          success: false,
+          error: 'Failed to create the order',
+        });
+      }
+    });
+    app.get('/orders', async (req, res) => {
+      try {
+        const orders = await orderCollection.find().toArray();
+        res.json({
+          success: true,
+          orders: orders,
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({
+          success: false,
+          error: 'Failed to fetch orders',
+        });
+      }
+    });
+
+    // fullfilled
+    app.patch('/orders/fullfilled/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+
+          fulfillmentStatus: 'fullfilled'
+        },
+      };
+      const result = await orderCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
+    app.patch('/orders/unfullfilled/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+
+          fulfillmentStatus: 'unfullfilled'
+        },
+      };
+      const result = await orderCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
+
+
+
+    // allproducts for admin dashboard
+    app.delete('/addproducts/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await productsCollection.deleteOne(query);
+      res.send(result);
+    })
+    app.get('/orderedproductdetails/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await orderCollection.findOne(query);
+      res.send(result)
+    })
+    app.get('/clientpayment/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await orderCollection.findOne(query);
+      res.send(result)
+    })
+
+    // Assuming you have a MongoDB collection for products
+    app.get('/updateproduct/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await productsCollection.findOne(query);
+      res.send(result)
+    });
+
+    app.put('/updateproduct/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true }
+      const updatedProduct = req.body;
+      const productUpdate = {
+        $set: {
+          category: updatedProduct.category,
+          description: updatedProduct.description,
+          email: updatedProduct.email,
+          keyfeatures: updatedProduct.keyfeatures,
+          name: updatedProduct.name,
+          price: updatedProduct.price,
+          suggestprice: updatedProduct.suggestprice,
+
+          productImages: updatedProduct.productImages,
+          quantity: updatedProduct.quantity,
         }
-    } catch (error) {
-        console.error('Error updating fulfillment status:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-});
+      }
+      const result = await productsCollection.updateOne(filter, productUpdate, options);
+      res.send(result)
+    });
 
-  
 
-  // allproducts for admin dashboard
-  app.delete('/addproducts/:id', async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: new ObjectId(id) }
-    const result = await productsCollection.deleteOne(query);
-    res.send(result);
-  })
-  app.get('/orderedproductdetails/:id', async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: new ObjectId(id) }
-    const result = await orderCollection.findOne(query);
-    res.send(result)
-  })
+    // searching
+    const indexKeys = { name: 1 };
+    const indexOptions = { name: 'toyName' };
+    const result = await productsCollection.createIndex(indexKeys, indexOptions);
+    console.log(result);
 
-// Assuming you have a MongoDB collection for products
-app.get('/updateproduct/:id', async (req, res) => {
-  const id = req.params.id;
-  const query = { _id: new ObjectId(id) }
-  const result = await productsCollection.findOne(query);
-  res.send(result)
-});
+    app.get("/productNameSearch/:text", async (req, res) => {
+      const text = req.params.text;
+      // console.log(text)
+      const result = await productsCollection
+        .find({
+          $or: [
+            { name: { $regex: text, $options: "i" } },
+          ],
+        })
+        .toArray();
+      res.send(result);
+    });
 
-app.put('/updateproduct/:id', async (req, res) => {
-  const id = req.params.id;
-  const filter = { _id: new ObjectId(id) }
-  const options = { upsert: true }
-  const updatedProduct = req.body;
-  const productUpdate = {
-    $set: {
-      category: updatedProduct.category,
-      description: updatedProduct.description,
-      email: updatedProduct.email,
-      keyfeatures: updatedProduct.keyfeatures,
-      name: updatedProduct.name,
-      price: updatedProduct.price,
-      suggestprice: updatedProduct.suggestprice,
-
-      productImages: updatedProduct.productImages,
-      quantity: updatedProduct.quantity,
-    }
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
   }
-  const result = await productsCollection.updateOne(filter, productUpdate, options);
-  res.send(result)
-});
-
-
-  // searching
-  const indexKeys = { name: 1 };
-  const indexOptions = { name: 'toyName' };
-  const result = await productsCollection.createIndex(indexKeys, indexOptions);
-  console.log(result);
-
-  app.get("/productNameSearch/:text", async (req, res) => {
-    const text = req.params.text;
-    // console.log(text)
-    const result = await productsCollection
-      .find({
-        $or: [
-          { name: { $regex: text, $options: "i" } },
-        ],
-      })
-      .toArray();
-    res.send(result);
-  });
-  
-  console.log("Pinged your deployment. You successfully connected to MongoDB!");
-} 
-finally {
-  // Ensures that the client will close when you finish/error
-  // await client.close();
-}
+  finally {
+    // Ensures that the client will close when you finish/error
+    // await client.close();
+  }
 }
 run().catch(console.dir);
 
