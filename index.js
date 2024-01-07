@@ -96,6 +96,16 @@ async function run() {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
+
+    // delete
+    app.delete('/users/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
     //  all project
     // app.post('/addproduct', verifyJWT, async (req, res) => {
     // app.post('/addproducts', async (req, res) => {
@@ -208,6 +218,14 @@ async function run() {
     //   res.send(result);
     // });
 
+    
+    // delete
+    app.delete('/subscriptions/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await subcriptionCollection.deleteOne(query);
+      res.send(result);
+    })
     app.get('/addproducts', async (req, res) => {
       try {
         const products = await productsCollection.find().toArray();
